@@ -329,3 +329,60 @@ spec:
       - name: tmp
         emptyDir: {}
 ---
+##################################################################################################
+# Load Generator Service
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: loader
+  labels:
+    app: loader
+    service: loader
+spec:
+  ports:
+  - port: 9080
+    name: http
+  selector:
+    app: loader
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: bookinfo-loader
+  labels:
+    account: loader
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loader-v1
+  labels:
+    app: loader
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loader
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: loader
+        version: v1
+    spec:
+      serviceAccountName: bookinfo-loader
+      containers:
+      - name: loader
+        image: k8s.gcr.io/hpa-example:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9080
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: tmp
+        emptyDir: {}
+---

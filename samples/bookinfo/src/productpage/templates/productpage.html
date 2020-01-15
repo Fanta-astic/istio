@@ -42,6 +42,8 @@
     <button type="button" class="btn btn-default navbar-btn navbar-right" data-toggle="modal" href="#login-modal">Sign
       in</button>
     {% endif %}
+    <button type="button" class="btn btn-default navbar-btn navbar-left" href="loader">Loader
+      </button>
   </div>
 </nav>
 
@@ -118,6 +120,17 @@
       <h4 class="text-center text-primary">Error fetching product details!</h4>
       {% if details: %}
       <p>{{ details.error }}</p>
+      {% endif %}
+      {% endif %}
+    </div>
+
+    <div class="col-md-6">
+      {% if loaderStatus == 200: %}
+      <h4 class="text-center text-primary">Loader</h4>
+      {% else %}
+      <h4 class="text-center text-primary">Error reaching Loader!</h4>
+      {% if loader: %}
+      <p>{{ loader.error }}</p>
       {% endif %}
       {% endif %}
     </div>

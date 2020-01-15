@@ -61,8 +61,15 @@ servicesDomain = "" if (os.environ.get("SERVICES_DOMAIN") is None) else "." + os
 detailsHostname = "details" if (os.environ.get("DETAILS_HOSTNAME") is None) else os.environ.get("DETAILS_HOSTNAME")
 ratingsHostname = "ratings" if (os.environ.get("RATINGS_HOSTNAME") is None) else os.environ.get("RATINGS_HOSTNAME")
 reviewsHostname = "reviews" if (os.environ.get("REVIEWS_HOSTNAME") is None) else os.environ.get("REVIEWS_HOSTNAME")
+loaderHostname = "loader" if (os.environ.get("LOADER_HOSTNAME") is None) else os.environ.get("LOADER_HOSTNAME")
 
 flood_factor = 0 if (os.environ.get("FLOOD_FACTOR") is None) else int(os.environ.get("FLOOD_FACTOR"))
+
+loader = {
+    "name": "http://{0}{1}:9080".format(loaderHostname, servicesDomain),
+    "endpoint": "loader",
+    "children": []
+}
 
 details = {
     "name": "http://{0}{1}:9080".format(detailsHostname, servicesDomain),
@@ -85,13 +92,14 @@ reviews = {
 productpage = {
     "name": "http://{0}{1}:9080".format(detailsHostname, servicesDomain),
     "endpoint": "details",
-    "children": [details, reviews]
+    "children": [details, reviews, loader]
 }
 
 service_dict = {
     "productpage": productpage,
     "details": details,
     "reviews": reviews,
+    "loader": loader,
 }
 
 # A note on distributed tracing:
@@ -229,6 +237,11 @@ def logout():
     session.pop('user', None)
     return response
 
+# @app.route('/loader', methods=['GET'])
+# def loader():
+#     response = app.make_response(redirect(request.referrer))
+#     return response
+
 # a helper function for asyncio.gather, does not return a value
 
 
@@ -259,6 +272,7 @@ def front():
     user = session.get('user', '')
     product = getProduct(product_id)
     detailsStatus, details = getProductDetails(product_id, headers)
+    loaderStatus, loader = getLoader(product_id, headers)
 
     if flood_factor > 0:
         floodReviews(product_id, headers)
@@ -268,6 +282,8 @@ def front():
         'productpage.html',
         detailsStatus=detailsStatus,
         reviewsStatus=reviewsStatus,
+        loaderStatus=loaderStatus,
+        loader=loader,
         product=product,
         details=details,
         reviews=reviews,
@@ -287,6 +303,12 @@ def productRoute(product_id):
     status, details = getProductDetails(product_id, headers)
     return json.dumps(details), status, {'Content-Type': 'application/json'}
 
+@app.route('/api/v1/loader/<product_id>')
+@trace()
+def loaderRoute(product_id):
+    headers = getForwardHeaders(request)
+    status, details = getProductLoader(product_id, headers)
+    return json.dumps(details), status, {'Content-Type': 'application/json'}
 
 @app.route('/api/v1/products/<product_id>/reviews')
 @trace()
@@ -363,6 +385,17 @@ def getProductRatings(product_id, headers):
         status = res.status_code if res is not None and res.status_code else 500
         return status, {'error': 'Sorry, product ratings are currently unavailable for this book.'}
 
+def getLoader(product_id, headers):
+    try:
+        url = loader['name'] + "/" + loader['endpoint']
+        res = requests.get(url, headers=headers, timeout=3.0)
+    except BaseException:
+        res = None
+    if res and res.status_code == 200:
+        return 200, res.json()
+    else:
+        status = res.status_code if res is not None and res.status_code else 500
+        return status, {'error': 'Sorry, Loader is not available.'}
 
 class Writer(object):
     def __init__(self, filename):
