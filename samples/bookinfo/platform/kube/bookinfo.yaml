@@ -419,7 +419,7 @@ metadata:
     version: v1
 spec:
   replicas: 1
-  selector: cwalops/frontend:latest
+  selector:
     matchLabels:
       app: compressor
       version: v1
@@ -432,7 +432,7 @@ spec:
       serviceAccountName: bookinfo-compressor
       containers:
       - name: compressor
-        image: 
+        image: cwalops/frontend:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5000
