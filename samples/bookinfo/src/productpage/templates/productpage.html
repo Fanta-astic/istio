@@ -42,8 +42,9 @@
     <button type="button" class="btn btn-default navbar-btn navbar-right" data-toggle="modal" href="#login-modal">Sign
       in</button>
     {% endif %}
-    <button type="button" class="btn btn-default navbar-btn navbar-left" href="loader">Loader
+    <button type="button" class="btn btn-default navbar-btn navbar-left" onClick="history.go(0)" VALUE="Refresh">Refresh
       </button>
+
   </div>
 </nav>
 
@@ -133,6 +134,19 @@
       <p>{{ loader.error }}</p>
       {% endif %}
       {% endif %}
+    </div>
+
+    <div class="col-md-6">
+      {% if compressorStatus == 200: %}
+      <h4 class="text-center text-primary">Compressor</h4>
+      {% else %}
+      <h4 class="text-center text-primary">Error reaching Compressor!</h4>
+      {% if compressor: %}
+      <p>{{ compressor.error }}</p>
+      {% endif %}
+      {% endif %}
+      <button type="button" onClick="window.location='http://compressor:5000';" VALUE="Compressor">Compressor
+      </button>
     </div>
 
     <div class="col-md-6">

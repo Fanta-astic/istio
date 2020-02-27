@@ -62,12 +62,19 @@ detailsHostname = "details" if (os.environ.get("DETAILS_HOSTNAME") is None) else
 ratingsHostname = "ratings" if (os.environ.get("RATINGS_HOSTNAME") is None) else os.environ.get("RATINGS_HOSTNAME")
 reviewsHostname = "reviews" if (os.environ.get("REVIEWS_HOSTNAME") is None) else os.environ.get("REVIEWS_HOSTNAME")
 loaderHostname = "loader" if (os.environ.get("LOADER_HOSTNAME") is None) else os.environ.get("LOADER_HOSTNAME")
+compressorHostname = "compressor" if (os.environ.get("COMPRESSOR_HOSTNAME") is None) else os.environ.get("COMPRESSOR_HOSTNAME")
 
 flood_factor = 0 if (os.environ.get("FLOOD_FACTOR") is None) else int(os.environ.get("FLOOD_FACTOR"))
 
+compressor = {
+    "name": "http://{0}{1}:9080".format(compressorHostname, servicesDomain),
+    "endpoint": "compressor",
+    "children": []
+}
+
 loader = {
     "name": "http://{0}{1}:9080".format(loaderHostname, servicesDomain),
-    "endpoint": "loader",
+    "endpoint": "",
     "children": []
 }
 
@@ -92,7 +99,7 @@ reviews = {
 productpage = {
     "name": "http://{0}{1}:9080".format(detailsHostname, servicesDomain),
     "endpoint": "details",
-    "children": [details, reviews, loader]
+    "children": [details, reviews, loader, compressor]
 }
 
 service_dict = {
@@ -100,6 +107,7 @@ service_dict = {
     "details": details,
     "reviews": reviews,
     "loader": loader,
+    "compressor": compressor,
 }
 
 # A note on distributed tracing:
@@ -273,6 +281,7 @@ def front():
     product = getProduct(product_id)
     detailsStatus, details = getProductDetails(product_id, headers)
     loaderStatus, loader = getLoader(product_id, headers)
+    compressorStatus, compressor = getCompressor(product_id, headers)
 
     if flood_factor > 0:
         floodReviews(product_id, headers)
@@ -284,6 +293,8 @@ def front():
         reviewsStatus=reviewsStatus,
         loaderStatus=loaderStatus,
         loader=loader,
+        compressorStatus=compressorStatus,
+        compressor=compressor,
         product=product,
         details=details,
         reviews=reviews,
@@ -308,6 +319,13 @@ def productRoute(product_id):
 def loaderRoute(product_id):
     headers = getForwardHeaders(request)
     status, details = getProductLoader(product_id, headers)
+    return json.dumps(details), status, {'Content-Type': 'application/json'}
+
+@app.route('/api/v1/compressor/<product_id>')
+@trace()
+def compressorRoute(product_id):
+    headers = getForwardHeaders(request)
+    status, details = getProductCompressor(product_id, headers)
     return json.dumps(details), status, {'Content-Type': 'application/json'}
 
 @app.route('/api/v1/products/<product_id>/reviews')
@@ -392,10 +410,22 @@ def getLoader(product_id, headers):
     except BaseException:
         res = None
     if res and res.status_code == 200:
-        return 200, res.json()
+        return 200, {'success': 'Hello from Loader'}
     else:
         status = res.status_code if res is not None and res.status_code else 500
         return status, {'error': 'Sorry, Loader is not available.'}
+
+def getCompressor(product_id, headers):
+    try:
+        url = compressor['name'] + "/" + compressor['endpoint']
+        res = requests.get(url, headers=headers, timeout=3.0)
+    except BaseException:
+        res = None
+    if res and res.status_code == 200:
+        return 200, {'success': 'Hello from Compressor'}
+    else:
+        status = res.status_code if res is not None and res.status_code else 500
+        return status, {'error': 'Sorry, Compressor is not available.'}
 
 class Writer(object):
     def __init__(self, filename):
