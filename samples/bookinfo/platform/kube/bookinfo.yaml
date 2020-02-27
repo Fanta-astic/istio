@@ -386,3 +386,60 @@ spec:
       - name: tmp
         emptyDir: {}
 ---
+##################################################################################################
+# Compressor Service
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: compressor
+  labels:
+    app: compressor
+    service: compressor
+spec:
+  ports:
+  - port: 5000
+    name: http
+  selector:
+    app: compressor
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: bookinfo-compressor
+  labels:
+    account: compressor
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: compressor-v1
+  labels:
+    app: compressor
+    version: v1
+spec:
+  replicas: 1
+  selector: cwalops/frontend:latest
+    matchLabels:
+      app: compressor
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: compressor
+        version: v1
+    spec:
+      serviceAccountName: bookinfo-compressor
+      containers:
+      - name: compressor
+        image: 
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: tmp
+        emptyDir: {}
+---
