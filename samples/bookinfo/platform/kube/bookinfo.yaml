@@ -378,7 +378,7 @@ spec:
         image: k8s.gcr.io/hpa-example:latest
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 9080
+        - containerPort: 80
         volumeMounts:
         - name: tmp
           mountPath: /tmp
@@ -387,7 +387,7 @@ spec:
         emptyDir: {}
 ---
 ##################################################################################################
-# Compressor Service
+# Compressor frontend Service
 ##################################################################################################
 apiVersion: v1
 kind: Service
@@ -436,6 +436,120 @@ spec:
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5000
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: tmp
+        emptyDir: {}
+---
+##################################################################################################
+# Ratio Service
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: ratio
+  labels:
+    app: ratio
+    service: ratio
+spec:
+  ports:
+  - port: 5001
+    name: http
+  selector:
+    app: ratio
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: bookinfo-ratio
+  labels:
+    account: ratio
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ratio-v1
+  labels:
+    app: ratio
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ratio
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: ratio
+        version: v1
+    spec:
+      serviceAccountName: bookinfo-ratio
+      containers:
+      - name: ratio
+        image: cwalops/ratioservice:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5001
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: tmp
+        emptyDir: {}
+---
+##################################################################################################
+# Compressor detail Service
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: detail
+  labels:
+    app: detail
+    service: compressor
+spec:
+  ports:
+  - port: 5002
+    name: http
+  selector:
+    app: detail
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: bookinfo-detail
+  labels:
+    account: detail
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: detail-v1
+  labels:
+    app: detail
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: detail
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: detail
+        version: v1
+    spec:
+      serviceAccountName: bookinfo-detail
+      containers:
+      - name: detail
+        image: cwalops/detailservice:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5002
         volumeMounts:
         - name: tmp
           mountPath: /tmp
