@@ -67,7 +67,7 @@ compressorHostname = "compressor" if (os.environ.get("COMPRESSOR_HOSTNAME") is N
 flood_factor = 0 if (os.environ.get("FLOOD_FACTOR") is None) else int(os.environ.get("FLOOD_FACTOR"))
 
 compressor = {
-    "name": "http://{0}{1}:9080".format(compressorHostname, servicesDomain),
+    "name": "http://{0}{1}:5000".format(compressorHostname, servicesDomain),
     "endpoint": "compressor",
     "children": []
 }
