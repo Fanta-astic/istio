@@ -68,7 +68,7 @@ flood_factor = 0 if (os.environ.get("FLOOD_FACTOR") is None) else int(os.environ
 
 compressor = {
     "name": "http://{0}{1}:5000".format(compressorHostname, servicesDomain),
-    "endpoint": "compressor",
+    "endpoint": "",
     "children": []
 }
 
