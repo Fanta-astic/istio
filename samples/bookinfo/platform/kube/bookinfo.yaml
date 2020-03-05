@@ -379,6 +379,11 @@ spec:
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
+        resources:
+          limits:
+            cpu: 500m
+          requests:
+            cpu: 200m
         volumeMounts:
         - name: tmp
           mountPath: /tmp
@@ -436,6 +441,11 @@ spec:
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5000
+        resources:
+          limits:
+            cpu: 500m
+          requests:
+            cpu: 200m
         volumeMounts:
         - name: tmp
           mountPath: /tmp
