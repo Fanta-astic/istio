@@ -318,7 +318,7 @@ spec:
       serviceAccountName: bookinfo-productpage
       containers:
       - name: productpage
-        image: cwalops/productpage:compressor
+        image: cwalops/productpage:compressor11
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9080
