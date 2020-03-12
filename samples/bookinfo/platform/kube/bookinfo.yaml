@@ -397,48 +397,48 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: compressor
+  name: frontend
   labels:
-    app: compressor
-    service: compressor
+    app: frontend
+    service: frontend
 spec:
   ports:
   - port: 5000
     name: http
   selector:
-    app: compressor
+    app: frontend
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: bookinfo-compressor
+  name: bookinfo-frontend
   labels:
-    account: compressor
+    account: frontend
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: compressor-v1
+  name: frontend-v1
   labels:
-    app: compressor
+    app: frontend
     version: v1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: compressor
+      app: frontend
       version: v1
   template:
     metadata:
       labels:
-        app: compressor
+        app: frontend
         version: v1
     spec:
-      serviceAccountName: bookinfo-compressor
+      serviceAccountName: bookinfo-frontend
       containers:
-      - name: compressor
+      - name: frontend
         image: cwalops/frontend:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
         resources:
@@ -459,48 +459,48 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ratio
+  name: ratioservice
   labels:
-    app: ratio
-    service: ratio
+    app: ratioservice
+    service: ratioservice
 spec:
   ports:
   - port: 5001
     name: http
   selector:
-    app: ratio
+    app: ratioservice
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: bookinfo-ratio
+  name: bookinfo-ratioservice
   labels:
-    account: ratio
+    account: ratioservice
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ratio-v1
   labels:
-    app: ratio
+    app: ratioservice
     version: v1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ratio
+      app: ratioservice
       version: v1
   template:
     metadata:
       labels:
-        app: ratio
+        app: ratioservice
         version: v1
     spec:
-      serviceAccountName: bookinfo-ratio
+      serviceAccountName: bookinfo-ratioservice
       containers:
       - name: ratio
         image: cwalops/ratioservice:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 5001
         volumeMounts:
@@ -516,48 +516,48 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: detail
+  name: detailservice
   labels:
-    app: detail
+    app: detailservice
     service: compressor
 spec:
   ports:
   - port: 5002
     name: http
   selector:
-    app: detail
+    app: detailservice
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: bookinfo-detail
+  name: bookinfo-detailservice
   labels:
-    account: detail
+    account: detailservice
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: detail-v1
+  name: detailservice-v1
   labels:
-    app: detail
+    app: detailservice
     version: v1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: detail
+      app: detailservice
       version: v1
   template:
     metadata:
       labels:
-        app: detail
+        app: detailservice
         version: v1
     spec:
-      serviceAccountName: bookinfo-detail
+      serviceAccountName: bookinfo-detailservice
       containers:
-      - name: detail
+      - name: detailservice
         image: cwalops/detailservice:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 5002
         volumeMounts:
