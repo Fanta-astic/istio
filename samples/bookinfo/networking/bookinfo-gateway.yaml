@@ -34,10 +34,38 @@ spec:
         exact: /logout
     - uri:
         prefix: /api/v1/products
-    - uri:
-        exact: /loader
     route:
     - destination:
         host: productpage
         port:
           number: 9080
+  - match: #reach the compressor front page
+    - uri:
+        exact: compressor
+    rewrite:
+      uri: /
+    route:
+    - destination:
+        host: frontend
+        port:
+          number: 5000
+  - match: # reach the compressor loader
+    - uri:
+        exact: compressor/formY
+    - uri:
+        exact: formY
+    rewrite:
+      uri: formY
+    route:
+    - destination:
+        host: frontend
+        port:
+          number: 5000
+  - match: #reach the compressor sumission form
+    - uri:
+        exact: formX
+    route:
+    - destination:
+        host: frontend
+        port:
+          number: 5000
