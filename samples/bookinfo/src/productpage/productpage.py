@@ -62,7 +62,7 @@ detailsHostname = "details" if (os.environ.get("DETAILS_HOSTNAME") is None) else
 ratingsHostname = "ratings" if (os.environ.get("RATINGS_HOSTNAME") is None) else os.environ.get("RATINGS_HOSTNAME")
 reviewsHostname = "reviews" if (os.environ.get("REVIEWS_HOSTNAME") is None) else os.environ.get("REVIEWS_HOSTNAME")
 loaderHostname = "loader" if (os.environ.get("LOADER_HOSTNAME") is None) else os.environ.get("LOADER_HOSTNAME")
-compressorHostname = "compressor" if (os.environ.get("COMPRESSOR_HOSTNAME") is None) else os.environ.get("COMPRESSOR_HOSTNAME")
+compressorHostname = "frontend" if (os.environ.get("COMPRESSOR_HOSTNAME") is None) else os.environ.get("COMPRESSOR_HOSTNAME")
 
 flood_factor = 0 if (os.environ.get("FLOOD_FACTOR") is None) else int(os.environ.get("FLOOD_FACTOR"))
 
