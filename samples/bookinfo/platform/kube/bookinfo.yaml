@@ -343,6 +343,7 @@ spec:
   ports:
   - port: 9080
     name: http
+    targetPort: 80
   selector:
     app: loader
 ---
