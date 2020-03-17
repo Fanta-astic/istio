@@ -28,6 +28,24 @@
 {% block title %}Simple Bookstore App{% endblock %}
 {% block content %}
 
+{% for review in reviews.reviews %}
+
+  {% if not review.rating: %}
+    <style>
+    body {background-color:pink;}
+    </style>
+  {% endif %}
+
+  {% if review.rating: %}
+  {% if review.rating.stars: %}
+  {% if review.rating.color == "red": %}
+    body {background-color:yellow;}
+  {% endif %}
+  {% endif %}
+  {% endif %}
+
+{% endfor %}
+
 <nav class="navbar navbar-inverse navbar-static-top">
   <div class="container">
     <div class="navbar-header">
@@ -153,6 +171,7 @@
     <div class="col-md-6">
       {% if reviewsStatus == 200: %}
       <h4 class="text-center text-primary">Book Reviews</h4>
+
       {% for review in reviews.reviews %}
       <blockquote>
         <p>{{ review.text }}</p>
@@ -175,6 +194,7 @@
         {% endif %}
       </blockquote>
       {% endfor %}
+
       {% else %}
       <h4 class="text-center text-primary">Error fetching product reviews!</h4>
       {% if reviews: %}
@@ -185,3 +205,4 @@
   </div>
 </div>
 {% endblock %}
+
