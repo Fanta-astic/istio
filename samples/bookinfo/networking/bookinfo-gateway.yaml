@@ -41,7 +41,7 @@ spec:
           number: 9080
   - match: #reach the compressor front page
     - uri:
-        exact: compressor
+        exact: /compressor
     rewrite:
       uri: /
     route:
@@ -51,19 +51,19 @@ spec:
           number: 5000
   - match: # reach the compressor loader
     - uri:
-        exact: compressor/formY
+        exact: /compressor/formY
     - uri:
-        exact: formY
+        exact: /formY
     rewrite:
-      uri: formY
+      uri: /formY
     route:
     - destination:
         host: frontend
         port:
           number: 5000
-  - match: #reach the compressor sumission form
+  - match: #reach the compressor submission form
     - uri:
-        exact: formX
+        exact: /formX
     route:
     - destination:
         host: frontend
