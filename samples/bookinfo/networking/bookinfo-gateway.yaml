@@ -51,11 +51,11 @@ spec:
           number: 5000
   - match: # reach the compressor loader
     - uri:
-        exact: /compressor/formY
+        exact: /compressor/loadGenerator
     - uri:
-        exact: /formY
+        exact: /loadGenerator
     rewrite:
-      uri: /formY
+      uri: /loadGenerator
     route:
     - destination:
         host: frontend
@@ -63,7 +63,7 @@ spec:
           number: 5000
   - match: #reach the compressor submission form
     - uri:
-        exact: /formX
+        exact: /uploadFile
     route:
     - destination:
         host: frontend
